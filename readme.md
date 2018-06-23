@@ -2,7 +2,7 @@ This project was from Jonas Schmedtmann's 'The Complete JavaScript Course' on Ud
 
 The app is deployed and available to use -
 
-https://mysterious-lowlands-58174.herokuapp.com/
+https://shielded-fjord-62551.herokuapp.com/
 
 My additional features and code refactoring include - 
 
