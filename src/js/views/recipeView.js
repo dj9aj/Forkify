@@ -1,18 +1,53 @@
 import { elements } from './base';
 import { Fraction } from 'fractional';
 
+
 export const clearRecipe = () => {
     elements.recipe.innerHTML = '';
-};
+}; 
+
+
+
+// Function to format string
 const formatCount = count => {
     if (count) {
-        // count = 2.5 --> 5/2 --> 2 1/2
-        // count = 0.5 --> 1/2
-        const newCount = Math.round(count * 10000) / 10000;
-        const [int, dec] = newCount.toString().split('.').map(el => parseInt(el, 10));
+        // Return string to specified precision
+        let newCount = count.toPrecision(2);
+        
+        // Use destructuring to create two variables at once (integer and decimal). Split the string up by the decimal point. Create new array from strings using map to convert the strings back into numbers.
+        let [int, dec] = newCount.split('.').map(el => parseInt(el, 10));
+       
+        const increment = 2.5;
+        const threshold = 1.25;
+        let remain, newDec;
 
-        if (!dec) return newCount;
+        // If decimal does not round to quarter increments
+        if (dec % increment !== 0) { 
+            // Find difference between value and increment
+            remain = dec % increment;  
+    
+            if (remain >= threshold) { // Round Up
+               newDec = dec - remain;
+               newDec += increment;
+            } else { // Round down
+                newDec = (dec - remain) * 10; 
+            }
+        
+        } else {
+            // If dec already equal to quarter increment, newDec equal to original dec value 
+            newDec = dec;
+        }
 
+        // If there is no decimal, such as 2, or decimal equals 0, then simply return the original count and leave the function.
+        if (!newDec) {
+            newCount = int;
+            return newCount;
+        }
+
+        // Add int and newDec values together and convert back to number
+        newCount = parseFloat(`${int}.${newDec}`);
+        
+        
         if (int === 0) {
             const fr = new Fraction(newCount);
             return `${fr.numerator}/${fr.denominator}`;
@@ -24,11 +59,11 @@ const formatCount = count => {
     return '?';
 };
 
+
+
 const createIngredient = ingredient => `
     <li class="recipe__item">
-        <svg class="recipe__icon">
-            <use href="img/icons.svg#icon-check"></use>
-        </svg>
+        <input type="checkbox" class="recipe__icon" checked>
         <div class="recipe__count">${formatCount(ingredient.count)}</div>
         <div class="recipe__ingredient">
             <span class="recipe__unit">${ingredient.unit}</span>
@@ -36,6 +71,8 @@ const createIngredient = ingredient => `
         </div>
     </li>
 `;
+
+
 
 export const renderRecipe = (recipe, isLiked) => {
     const markup = `
@@ -45,7 +82,6 @@ export const renderRecipe = (recipe, isLiked) => {
                 <span>${recipe.title}</span>
             </h1>
         </figure>
-
         <div class="recipe__details">
             <div class="recipe__info">
                 <svg class="recipe__info-icon">
@@ -82,6 +118,8 @@ export const renderRecipe = (recipe, isLiked) => {
             </button>
         </div>
 
+
+
         <div class="recipe__ingredients">
             <ul class="recipe__ingredient-list">
                 ${recipe.ingredients.map(el => createIngredient(el)).join('')}
@@ -110,16 +148,38 @@ export const renderRecipe = (recipe, isLiked) => {
             </a>
         </div>
     `;
+
     elements.recipe.insertAdjacentHTML('afterbegin', markup);
 };
+
+
 
 export const updateServingsIngredients = recipe => {
     // Update servings
     document.querySelector('.recipe__info-data--people').textContent = recipe.servings;
 
-    // Update ingredeints
+    // Update counts
+    // Create an array from all the classes matching .recipe__count
     const countElements = Array.from(document.querySelectorAll('.recipe__count'));
+    // Loop over all the classes and change the text content of each element. Replace the text content with the updated ingredient amounts at the same index number
     countElements.forEach((el, i) => {
         el.textContent = formatCount(recipe.ingredients[i].count);
     });
+};
+
+
+
+export const checkTickedIngredients = () => {
+    
+    // Convert node list into array
+    const checkBoxes = Array.from(document.querySelectorAll('.recipe__icon'));
+    const isChecked = [];
+
+    // Loop over array to see if checked property is true or false
+    checkBoxes.forEach(box => {
+        isChecked.push(box.checked);
+    });
+    
+    // Return array containing true and false values
+    return isChecked;
 };
