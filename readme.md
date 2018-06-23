@@ -1,5 +1,9 @@
 This project was from Jonas Schmedtmann's 'The Complete JavaScript Course' on Udemy.
 
+The app is deployed and available to use -
+
+https://mysterious-lowlands-58174.herokuapp.com/
+
 My additional features and code refactoring include - 
 
 - Refactored formatCount function in recipeView.js.
